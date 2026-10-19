@@ -9,5 +9,8 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.11.2",
     "nodemon": "^3.1.14"
+  },
+  "devDependencies": {
+    "swagger-autogen": "^2.23.7"
   }
 }
