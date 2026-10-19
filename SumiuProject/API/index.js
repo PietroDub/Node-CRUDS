@@ -1,8 +1,10 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import { createRequire } from "module";
 import { createServer } from "http";
+import userRoutes from "./routes/userRoutes.js";
 
 const require = createRequire(import.meta.url);
 const swaggerDocument = require("./swagger-output.json");
