@@ -1,4 +1,3 @@
-import { use } from "react";
 import User from "../models/user.js";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
@@ -26,7 +25,7 @@ export default class UserController {
 
       return res
         .status(200)
-        .json({ message: "User sucessfully created!", newUser });
+        .json({ message: "User sucessfully created!", newUser});
     } catch (error) {
       return res.status(500).json({ message: "Error on creating user!" });
     }
@@ -58,7 +57,7 @@ export default class UserController {
         email: user.email,
       };
 
-      const token = jwt.sign(tokenPayload, process.env.JWT_SCRET, {
+      const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
         expiresIn: "1h",
       });
 
@@ -85,13 +84,18 @@ export default class UserController {
 
   static async logout(req, res) {
     try {
-      return res
-        .status(200)
-        .json({ message: "Logout realizado com sucesso. " });
-    } catch (error) {
-      return res
-        .status(500)
-        .json({ message: "Error while doing logout!", error });
+
+      res.clearCookie("token", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        maxAge: 0,
+      });
+            return res.status(200).json({ message: "Logout sucessfully! " });
+        } catch (error) {
+            return res
+                .status(500)
+                .json({ message: "Error while doing logout!", error });
+        }
     }
-  }
 }
