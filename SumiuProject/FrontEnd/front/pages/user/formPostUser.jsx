@@ -28,27 +28,36 @@ export default function FormPostUser() {
 
   return (
     <div>
-      <h1>Form Post User</h1>
-      <form onSubmit={handleSubmit}>
+      <h1 className="text-center text-4xl font-semibold text-orange-950">
+        Form Post User
+      </h1>
+      <form onSubmit={handleSubmit} className="mt-8">
         <input
           type="text"
           placeholder="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          className="mt-4 w-full border border-orange-200 bg-white px-3 py-2 outline-none focus:border-orange-600"
         />
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="mt-4 w-full border border-orange-200 bg-white px-3 py-2 outline-none focus:border-orange-600"
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="mt-4 w-full border border-orange-200 bg-white px-3 py-2 outline-none focus:border-orange-600"
         />
-        <button type="submit" disabled={loading}>
+        <button
+          type="submit"
+          disabled={loading}
+          className="mt-6 w-full rounded-full bg-orange-600 py-3 font-medium text-white disabled:opacity-50"
+        >
           Submit
         </button>
       </form>

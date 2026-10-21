@@ -33,34 +33,46 @@ export default function Hero() {
   };
 
   return (
-    <section className="hero">
+    <section className="hero text-center">
       <div className="container">
         <div className="hero-content">
-          <h1>Requisições!</h1>
-          <Link to="/requisition/create">Nova requisição</Link>
+          <h1 className="text-4xl font-semibold text-orange-950">Requisições!</h1>
+          <Link to="/requisition/create" className="mt-6 inline-block font-medium text-orange-700 underline">
+            Nova requisição
+          </Link>
 
-          <ul>
+          <ul className="mt-8 divide-y divide-orange-200">
             {requisitions.map((requisition) => (
-              <li key={requisition._id}>
-                {requisition.title}
-                <p>{requisition.description}</p>
+              <li key={requisition._id} className="py-5">
+                <p className="text-xl text-orange-950">{requisition.title}</p>
+                <p className="mt-1 text-stone-700">{requisition.description}</p>
                 <p>{requisition.dadName}</p>
                 <p>{requisition.dadDescription}</p>
                 <p>{requisition.dadAge}</p>
                 <p>{requisition.dadLastAddress}</p>
-                <button onClick={() => handleView(requisition._id, requisition)}>
-                  Ver mais
-                </button>
-                <button
-                  onClick={() => handleEdit(requisition._id, requisition)}
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={() => handleDelete(requisition._id, requisition)}
-                >
-                  Deletar
-                </button>
+                <div className="mt-3 flex justify-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleView(requisition._id, requisition)}
+                    className="rounded-full bg-orange-600 px-3 py-1 text-sm text-white"
+                  >
+                    Ver mais
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleEdit(requisition._id, requisition)}
+                    className="rounded-full border border-orange-600 px-3 py-1 text-sm text-orange-800"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(requisition._id, requisition)}
+                    className="rounded-full border border-orange-900 px-3 py-1 text-sm text-orange-950"
+                  >
+                    Deletar
+                  </button>
+                </div>
               </li>
             ))}
           </ul>

@@ -7,23 +7,36 @@ export default function RequisitionView() {
 
   if (!requisition) {
     return (
-      <p>
+      <p className="text-center text-orange-950">
         Não há dados desta requisição nesta navegação.{" "}
-        <Link to="/requisition">Voltar para a lista</Link>
+        <Link to="/requisition" className="underline">
+          Voltar para a lista
+        </Link>
       </p>
     );
   }
 
   return (
-    <article>
-      <h1>{requisition.title}</h1>
-      <p>{requisition.description}</p>
-      <p>{requisition.dadName}</p>
+    <article className="text-center">
+      <h1 className="text-4xl font-semibold text-orange-950">
+        {requisition.title}
+      </h1>
+      <p className="mt-4 text-stone-700">{requisition.description}</p>
+      <p className="mt-2">{requisition.dadName}</p>
       <p>{requisition.dadDescription}</p>
       <p>{requisition.dadAge}</p>
       <p>{requisition.dadLastAddress}</p>
-      <Link to={`/requisition/edit/${id}`}>Editar</Link>
-      <Link to="/requisition">Voltar para a lista</Link>
+      <div className="mt-6 flex flex-col gap-3">
+        <Link
+          to={`/requisition/edit/${id}`}
+          className="rounded-full bg-orange-600 py-3 text-white"
+        >
+          Editar
+        </Link>
+        <Link to="/requisition" className="text-orange-800 underline">
+          Voltar para a lista
+        </Link>
+      </div>
     </article>
   );
 }

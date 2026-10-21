@@ -12,9 +12,9 @@ import RequisitionView from "../pages/requisition/requisitionView.jsx";
 
 function App() {
   return (
-    <>
+    <div className="min-h-screen bg-orange-50 text-stone-900">
       <Header />
-      <main>
+      <main className="mx-auto max-w-xl px-6 py-12">
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/user/login" element={<FormLoginUser />} />
@@ -27,7 +27,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
 
