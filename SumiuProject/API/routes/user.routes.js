@@ -7,5 +7,6 @@ const userRoutes = Router();
 userRoutes.post("/", UserController.postUser);
 userRoutes.post("/login", UserController.login);
 userRoutes.post("/logout", userMiddleware, UserController.logout);
+userRoutes.put("/:id", userMiddleware, UserController.updateUser);
 
 export default userRoutes;

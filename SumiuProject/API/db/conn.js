@@ -5,6 +5,6 @@ const main = async () => {
     console.log("Conectado ao MongoDB");
 };
 
-main().catch((err) => console.error("Erro ao conectar!"));
+main().catch((err) => console.error("Erro ao conectar ao MongoDB!", err));
 
 export default mongoose;

@@ -1,5 +1,5 @@
 import { argon2d } from "argon2";
-import Requisition from "../models/requisition";
+import Requisition from "../models/requisition.js";
 
 export default class RequisitionController {
     static async postRequisition(req, res) {
@@ -13,7 +13,7 @@ export default class RequisitionController {
 
         try{
             const requisition = new Requisition({
-                titulo,
+                title,
                 description,
                 dadName,
                 dadDescription,
@@ -33,7 +33,7 @@ export default class RequisitionController {
     }
 
     static async deleteRequisition(req, res){
-        const requisitionId = req.body;
+        const requisitionId = req.params.id;
 
         try{
             const deletedRequisition = await Requisition.findByIdAndDelete(requisitionId);
@@ -56,14 +56,21 @@ export default class RequisitionController {
     }
 
     static async updateRequistion(req, res){
-        const requisitionId = req.body;
+        const requisitionId = req.params.id;
+        const { title, description, dadName, dadDescription, dadAge, dadLastAddress, motherInformation } = req.body;
+
+        if(!title || !description ||!dadName || !dadDescription || !dadAge || !dadLastAddress || !motherInformation){
+            return res 
+                .status(422)
+                .json({message: "All fields are necessary!"});
+        }
 
         try{
-            const updatedRequisition = await Requisition.findByIdAndUpdate(requisitionId);
-
+            const updatedRequisition = await Requisition.findByIdAndUpdate(requisitionId, { title, description, dadName, dadDescription, dadAge, dadLastAddress, motherInformation });
+            
             if(!updatedRequisition){
                 return res.status(404).json({
-                message: "Requisition not found",
+                    message: "Requisition not found",
                 }); 
             }
 
@@ -77,11 +84,11 @@ export default class RequisitionController {
         }
     }
 
-    static async GetRequistion(req, res){
-        const requisitionId = req.body;
+    static async getRequistion(req, res){
+        const requisitionId = req.params.id;
 
         try{
-            const requisition = Requisition.findById(requisitionId);
+            const requisition = await Requisition.findById(requisitionId);
 
             if(!requisition){
                 return res
@@ -109,14 +116,4 @@ export default class RequisitionController {
         }
     }
 
-    static async getRequisition(req, res){
-        const requisitionId = req.body;
-
-        try{
-            const requisition = await Requisition.findById(requisitionId);
-            return res.status(200).json({requisition});
-        } catch(error){
-            return res.status(500).json({message: "Error on getting requisition!"});
-        }
-    }
 }

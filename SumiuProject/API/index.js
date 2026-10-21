@@ -4,10 +4,9 @@ import cors from "cors";
 import { createRequire } from "module";
 import { createServer } from "http";
 import userRoutes from "./routes/user.routes.js";
-import swaggerDocument from "./swagger-output.json";
+import requisitionRoutes from "./routes/requisition.routes.js";
 import swaggerUi from "swagger-ui-express";
 import cookieParser from "cookie-parser";
-import connectDB from "./db/conn.js";
 
 const require = createRequire(import.meta.url);
 const swaggerDocument = require("./swagger-output.json");
@@ -32,8 +31,6 @@ app.use("/requisitions", requisitionRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-// verificar se a conexão com o banco de dados foi estabelecida
-await connectDB();
 
 httpServer.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)

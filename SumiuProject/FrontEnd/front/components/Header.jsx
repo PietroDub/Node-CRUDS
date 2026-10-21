@@ -3,7 +3,7 @@ export default function Header() {
     <header>
       <div className="container">
         <div className="logo">
-          <img src={logo} alt="logo" />
+          <h1>Cade Meu Pai!</h1>
         </div>
       </div>
     </header>
