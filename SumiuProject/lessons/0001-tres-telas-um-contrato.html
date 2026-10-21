@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lição 1 — Três telas, um contrato</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+  <main class="page">
+    <p class="kicker">Lição 1 · Sumiu</p>
+    <h1>Três telas, um contrato</h1>
+    <p class="lede">Antes de escrever JSX, dá para nomear a chamada de cada tela. O Vite em <code>FrontEnd/front</code> já sobe. Esta lição é só o mapa.</p>
+
+    <h2>As três telas</h2>
+    <ol>
+      <li>Cadastro de usuário.</li>
+      <li>Login.</li>
+      <li>Tela inicial: a lista de requisições, com as informações de cada uma.</li>
+    </ol>
+    <p>Uma tela só fala com uma rota que o processo do Express registrou. No guia de rotas, <code>app.use</code> é o que pendura um conjunto de rotas no servidor. Arquivo de rota que ninguém importa não responde nada.</p>
+
+    <h2>O que responde hoje</h2>
+    <p><code>API/index.js</code> registra só <code>/users</code>. Dentro de <code>API/routes/user.routes.js</code> estão estas chamadas:</p>
+    <table>
+      <thead>
+        <tr><th>Tela</th><th>Chamada</th><th>Corpo</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Cadastro</td>
+          <td><code>POST /users</code></td>
+          <td>nome, e-mail e senha</td>
+        </tr>
+        <tr>
+          <td>Login</td>
+          <td><code>POST /users/login</code></td>
+          <td>e-mail e senha</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note">A lista não tem chamada. <code>API/routes/requisition.routes.js</code> existe, e nem um <code>GET</code> de coleção está nesse arquivo. Enquanto <code>index.js</code> não montar essa rota, a terceira tela não tem de onde ler.</p>
+    <p>A folha curta, para voltar depois, está em <a href="../reference/contrato-da-api.html">Contrato da API</a>.</p>
+
+    <h2>Confere de memória</h2>
+    <div class="quiz" data-quiz>
+      <fieldset>
+        <legend>1. O cadastro chama qual rota?</legend>
+        <label><input type="radio" name="q1" value="a"> POST /login com campos</label>
+        <label><input type="radio" name="q1" value="b"> GET /users/ com campos</label>
+        <label><input type="radio" name="q1" value="c"> POST /users com campos</label>
+      </fieldset>
+      <fieldset>
+        <legend>2. O login chama qual rota?</legend>
+        <label><input type="radio" name="q2" value="a"> POST /users/login com email</label>
+        <label><input type="radio" name="q2" value="b"> POST /users/create com mail</label>
+        <label><input type="radio" name="q2" value="c"> GET /users/login com emails</label>
+      </fieldset>
+      <fieldset>
+        <legend>3. A lista inicial chama qual rota hoje?</legend>
+        <label><input type="radio" name="q3" value="a"> GET /requisitions está no index</label>
+        <label><input type="radio" name="q3" value="b"> Nenhuma rota lista está montada</label>
+        <label><input type="radio" name="q3" value="c"> GET /requisition/ está no index</label>
+      </fieldset>
+      <button type="button" data-check>Conferir</button>
+      <p class="feedback" data-feedback></p>
+      <script type="application/json" data-key>
+        {"q1":"c","q2":"a","q3":"b"}
+      </script>
+      <script type="application/json" data-reasons>
+        {
+          "q1": "Cadastro: o router de usuário está em /users, e criar usuário é POST /.",
+          "q2": "Login: a rota é POST /login, pendurada em /users, então o caminho fica /users/login.",
+          "q3": "Lista: index.js não dá app.use nas rotas de requisição, e não há GET da coleção."
+        }
+      </script>
+    </div>
+
+    <h2>Fonte</h2>
+    <p>Leia a seção inicial de <a href="https://expressjs.com/en/guide/routing.html">Routing, no guia do Express</a>. O trecho que importa aqui é o de <code>app.use</code>: é ele que decide se uma rota existe.</p>
+
+    <h2>Seu passo, no código</h2>
+    <p>Abra <code>API/index.js</code> e <code>API/routes/user.routes.js</code>. Confira as duas linhas de <code>POST</code>. Quando tiver visto, volta aqui e diz que viu. Aí o próximo passo é só o formulário de cadastro, em JSX, sem a tela de login ainda.</p>
+
+    <p class="footer-links">Se uma frase ficou torta, pergunta. Eu sigo no passo em que você está. <a href="../reference/contrato-da-api.html">Contrato da API</a></p>
+  </main>
+  <script src="../assets/quiz.js"></script>
+</body>
+</html>

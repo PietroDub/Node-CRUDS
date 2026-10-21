@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contrato da API — Sumiu</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+  <main class="page">
+    <p class="kicker">Referência</p>
+    <h1>Contrato da API</h1>
+    <p class="lede">O que o servidor responde hoje. Fonte: <code>API/index.js</code> e <code>API/routes/user.routes.js</code>. Uma rota escrita noutro arquivo e não registrada com <code>app.use</code> não existe para o navegador.</p>
+
+    <h2>Montado</h2>
+    <table>
+      <thead>
+        <tr><th>Tela</th><th>Chamada</th><th>Corpo</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Cadastro</td>
+          <td><code>POST /users</code></td>
+          <td><code>name</code>, <code>email</code>, <code>password</code></td>
+        </tr>
+        <tr>
+          <td>Login</td>
+          <td><code>POST /users/login</code></td>
+          <td><code>email</code>, <code>password</code></td>
+        </tr>
+        <tr>
+          <td>Sair</td>
+          <td><code>POST /users/logout</code></td>
+          <td>nenhum; exige o cookie <code>token</code></td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Base local: <code>http://localhost:5000</code>. O CORS aceita <code>http://localhost:5173</code> com credenciais.</p>
+
+    <h2>Ainda não</h2>
+    <p>Não há <code>GET</code> que devolva a lista de requisições. <code>API/routes/requisition.routes.js</code> não é importado em <code>API/index.js</code>. A tela inicial espera essa lista, então a rota entra antes da tela.</p>
+
+    <p class="footer-links"><a href="../lessons/0001-tres-telas-um-contrato.html">Lição 1 — Três telas, um contrato</a></p>
+  </main>
+</body>
+</html>

@@ -28,6 +28,7 @@ const httpServer = createServer(app);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use("/users", userRoutes);
+app.use("/requisitions", requisitionRoutes);
 
 const PORT = process.env.PORT || 5000;
 

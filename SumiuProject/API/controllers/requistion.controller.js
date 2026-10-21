@@ -99,4 +99,13 @@ export default class RequisitionController {
                    .json({message: "Requistion not found!"});
         }
     }
+
+    static async getAllRequisitions(req, res){
+        try{
+            const requisitions = await Requisition.find();
+            return res.status(200).json({message: "Requisitions:", requisitions});
+        } catch(error){
+            return res.status(500).json({message: "Error on getting all requisitions!"});
+        }
+    }
 }
