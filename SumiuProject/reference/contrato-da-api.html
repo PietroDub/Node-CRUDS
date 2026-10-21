@@ -10,7 +10,7 @@
   <main class="page">
     <p class="kicker">Referência</p>
     <h1>Contrato da API</h1>
-    <p class="lede">O que o servidor responde hoje. Fonte: <code>API/index.js</code> e <code>API/routes/user.routes.js</code>. Uma rota escrita noutro arquivo e não registrada com <code>app.use</code> não existe para o navegador.</p>
+    <p class="lede">O que o servidor do Sumiu responde hoje. Fonte: <code>API/index.js</code>, <code>API/routes/user.routes.js</code> e <code>API/routes/requisition.routes.js</code>. Uma rota escrita noutro arquivo e não registrada com <code>app.use</code> não existe para o navegador. A sequência de montagem dos três projetos está no <a href="./guia-da-arquitetura.html">guia de montagem</a>.</p>
 
     <h2>Montado</h2>
     <table>
@@ -37,8 +37,21 @@
     </table>
     <p>Base local: <code>http://localhost:5000</code>. O CORS aceita <code>http://localhost:5173</code> com credenciais.</p>
 
-    <h2>Ainda não</h2>
-    <p>Não há <code>GET</code> que devolva a lista de requisições. <code>API/routes/requisition.routes.js</code> não é importado em <code>API/index.js</code>. A tela inicial espera essa lista, então a rota entra antes da tela.</p>
+    <h2>Requisições</h2>
+    <p><code>index.js</code> monta esse router em <code>/requisitions</code>.</p>
+    <table>
+      <thead>
+        <tr><th>Chamada</th><th>Efeito</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>POST /requisitions</code></td><td>cria</td></tr>
+        <tr><td><code>GET /requisitions</code></td><td>lista</td></tr>
+        <tr><td><code>GET /requisitions/:id</code></td><td>uma requisição</td></tr>
+        <tr><td><code>PUT /requisitions/:id</code></td><td>atualiza</td></tr>
+        <tr><td><code>DELETE /requisitions/:id</code></td><td>apaga</td></tr>
+      </tbody>
+    </table>
+    <p>Nenhuma dessas linhas passa pelo middleware do cookie. Logout e atualização de usuário passam.</p>
 
     <p class="footer-links"><a href="../lessons/0001-tres-telas-um-contrato.html">Lição 1 — Três telas, um contrato</a></p>
   </main>

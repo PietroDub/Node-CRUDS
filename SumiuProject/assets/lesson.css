@@ -1,0 +1,170 @@
+:root {
+  --ink: #1c1917;
+  --muted: #57534e;
+  --rule: #d6d3d1;
+  --paper: #faf8f5;
+  --mark: #9a3412;
+  --ok: #14532d;
+  --bad: #7f1d1d;
+  --measure: 38rem;
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--paper); }
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--paper);
+  font: 18px/1.55 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+}
+
+.page {
+  max-width: calc(var(--measure) + 4rem);
+  margin: 0 auto;
+  padding: 3.5rem 2rem 5rem;
+}
+
+.kicker {
+  margin: 0 0 0.4rem;
+  color: var(--mark);
+  font: 600 0.72rem/1.3 ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0 0 0.8rem;
+  font-size: 2.35rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+h2 {
+  margin: 2.4rem 0 0.6rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  margin: 1.6rem 0 0.35rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.lede {
+  margin: 0 0 1.2rem;
+  font-size: 1.15rem;
+  line-height: 1.45;
+}
+
+p, li { color: var(--ink); }
+
+a { color: var(--mark); }
+
+code, pre {
+  font-family: "IBM Plex Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.84em;
+}
+
+code {
+  background: #efece7;
+  padding: 0.05em 0.28em;
+}
+
+pre {
+  background: #1c1917;
+  color: #faf8f5;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  line-height: 1.45;
+}
+
+pre code { background: transparent; color: inherit; padding: 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  margin: 0.8rem 0 1rem;
+}
+
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.45rem 0.55rem 0.45rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+th {
+  font: 600 0.72rem/1.3 ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.note, .done {
+  border-left: 3px solid var(--mark);
+  padding: 0.2rem 0 0.2rem 0.9rem;
+  color: var(--muted);
+}
+
+.step { margin: 0 0 1.4rem; }
+
+.step ol { padding-left: 1.2rem; }
+
+.footer-links {
+  margin-top: 2.8rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.quiz fieldset {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 0;
+  padding: 0.9rem 0 0.4rem;
+}
+
+.quiz legend {
+  font-weight: 600;
+  padding: 0;
+}
+
+.quiz label {
+  display: block;
+  margin: 0.35rem 0;
+  cursor: pointer;
+}
+
+.quiz button {
+  margin-top: 0.8rem;
+  background: var(--ink);
+  color: var(--paper);
+  border: 0;
+  padding: 0.55rem 1rem;
+  font: 600 0.9rem/1 ui-sans-serif, system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.feedback { min-height: 1.4em; font-size: 0.95rem; }
+.feedback.ok { color: var(--ok); }
+.feedback.bad { color: var(--bad); }
+
+.part { break-before: page; }
+
+@media print {
+  html, body { background: white; }
+  .page { max-width: none; padding: 0; }
+  a { color: inherit; text-decoration: none; }
+  pre { background: white; color: black; border: 1px solid #ccc; }
+  code { background: transparent; }
+  .quiz, .noprint { display: none; }
+  h2, h3, table, pre, .step { break-inside: avoid; }
+  @page { size: A4; margin: 16mm 16mm 18mm; }
+}

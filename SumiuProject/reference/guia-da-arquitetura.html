@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guia de montagem — API e front</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+  <main class="page">
+    <p class="kicker">Referência · imprimir e salvar como PDF</p>
+    <h1>Guia de montagem</h1>
+    <p class="lede">A ordem para criar de novo o que já existe na Bancada, no Sumiu e no <a href="https://github.com/PietroDub/Todo-Main">Todo</a>. Primeiro a API. Depois o front. Cada passo termina numa condição observável.</p>
+    <p>Os três projetos são o mesmo módulo, com nomes diferentes. Bancada chama o recurso de Ordem. Sumiu chama de Requisition. Todo chama de Tarefa. A pasta muda de <code>API/</code> para <code>backend/</code>. A interface HTTP é a mesma forma: um <code>Router</code> pendurado no <code>index.js</code> com <code>app.use</code>.</p>
+    <p class="note">Para virar PDF: abra este arquivo no navegador, Imprimir, destino “Salvar como PDF”. O quiz das lições não entra na impressão.</p>
+
+    <h2>Vocabulário</h2>
+    <p>Um <strong>módulo</strong> tem uma <strong>interface</strong> (o que quem chama precisa saber) e uma <strong>implementação</strong> (o que fica dentro). O <strong>seam</strong> é o lugar onde essa interface mora: dá para trocar o que está atrás sem editar quem chama. Um <strong>adapter</strong> é a coisa concreta sentada nesse seam.</p>
+    <p>No Sumiu, a interface do usuário é o conjunto de chamadas em <code>routes/user.routes.js</code>. O controller é a implementação. <code>db/conn.js</code> é o adapter do Mongo. No front, <code>src/api.js</code> é o adapter dessa mesma interface: as páginas chamam <code>createUser</code> e não sabem a URL.</p>
+    <p>Profundidade é quanta capacidade cabe atrás de uma interface pequena. <code>axios.create</code> num arquivo só, com <code>baseURL</code> e <code>withCredentials</code>, é profundo. Cada página montando o próprio cliente seria raso: a interface vazou para todo mundo.</p>
+
+    <h2>1. Criar a API</h2>
+    <div class="step">
+      <h3>1.1 Pasta e manifesto</h3>
+      <pre><code>mkdir api &amp;&amp; cd api
+npm init -y</code></pre>
+      <p><code>npm init -y</code> escreve o <code>package.json</code> com os padrões, sem perguntas. Fonte: <a href="https://docs.npmjs.com/cli/v11/commands/npm-init">npm-init</a>. No arquivo gerado, deixe <code>"type": "module"</code> para os <code>import</code> que os três projetos usam, e dois scripts:</p>
+      <pre><code>"type": "module",
+"scripts": {
+  "dev": "nodemon index.js",
+  "start": "node index.js"
+}</code></pre>
+      <p class="done">Pronto quando <code>node -e "console.log(1)"</code> roda na pasta e o <code>package.json</code> tem <code>"type": "module"</code>.</p>
+    </div>
+
+    <div class="step">
+      <h3>1.2 Pacotes do núcleo</h3>
+      <pre><code>npm install express mongoose dotenv cors cookie-parser
+npm install -D nodemon</code></pre>
+      <table>
+        <thead>
+          <tr><th>Pacote</th><th>O que faz nesta API</th><th>Onde aparece</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>express</code></td>
+            <td>Cria o servidor HTTP e entrega <code>req</code> / <code>res</code> para cada rota. <a href="https://expressjs.com/en/starter/installing.html">Instalação</a>.</td>
+            <td>Os três</td>
+          </tr>
+          <tr>
+            <td><code>mongoose</code></td>
+            <td>Abre o Mongo e define o model. <a href="https://mongoosejs.com/docs/connections.html">Conexão</a>, <a href="https://mongoosejs.com/docs/models.html">models</a>.</td>
+            <td>Os três</td>
+          </tr>
+          <tr>
+            <td><code>dotenv</code></td>
+            <td>Lê o <code>.env</code> para <code>process.env</code>. A primeira linha do <code>index.js</code> é <code>import "dotenv/config"</code>. <a href="https://github.com/motdotla/dotenv">dotenv</a>.</td>
+            <td>Sumiu, Todo. A Bancada lê <code>process.env</code> e não importa o dotenv no <code>index.js</code>.</td>
+          </tr>
+          <tr>
+            <td><code>cors</code></td>
+            <td>Autoriza o navegador em <code>localhost:5173</code> a chamar a API, com cookie. <code>credentials: true</code> e <code>origin</code> juntos. <a href="https://expressjs.com/en/resources/middleware/cors.html">cors</a>.</td>
+            <td>Os três</td>
+          </tr>
+          <tr>
+            <td><code>cookie-parser</code></td>
+            <td>Preenche <code>req.cookies</code>. Sem ele o middleware de login não vê o token. <a href="https://expressjs.com/en/resources/middleware/cookie-parser.html">cookie-parser</a>.</td>
+            <td>Os três instalam. Sumiu e Todo usam.</td>
+          </tr>
+          <tr>
+            <td><code>nodemon</code></td>
+            <td>Reinicia o processo quando um arquivo muda. Fica em <code>devDependencies</code>. O script <code>dev</code> chama ele.</td>
+            <td>Os três</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="done">Pronto quando <code>npm ls express mongoose dotenv cors cookie-parser</code> lista os cinco, e <code>nodemon</code> aparece só em dev.</p>
+    </div>
+
+    <div class="step">
+      <h3>1.3 Variáveis</h3>
+      <p>Crie <code>.env</code> na pasta da API. Não commite. O Todo guarda o modelo em <code>backend/.env.example</code>.</p>
+      <pre><code>PORT=5000
+MONGO_URI=mongodb://localhost:27017/nome_do_banco
+FRONTEND_URL=http://localhost:5173</code></pre>
+      <p>Sumiu e Todo caem em 5000 se <code>PORT</code> faltar. A Bancada cai em 3000. O front do Vite sobe em 5173, e esse tem de ser o <code>origin</code> do CORS.</p>
+      <p class="done">Pronto quando o arquivo existe e o <code>.gitignore</code> contém <code>.env</code>.</p>
+    </div>
+
+    <h2 class="part">2. Arquivos da API, nesta ordem</h2>
+    <p>A ordem é a ordem das dependências. Um model que importa a conexão não existe antes dela. Uma rota que aponta para um controller não existe antes dele. O <code>index.js</code> só monta o que já foi exportado. Apagar o <code>index.js</code> e deixar models e rotas espalhados não sobe servidor nenhum: a complexidade volta para quem teria de chamar cada arquivo. O <code>index.js</code> é o único lugar que compõe.</p>
+
+    <div class="step">
+      <h3>2.1 <code>db/conn.js</code> — adapter do banco</h3>
+      <p>Os três arquivos são o mesmo: <code>mongoose.connect(process.env.MONGO_URI)</code> e <code>export default mongoose</code>. O model importa esse módulo, não a string de conexão.</p>
+      <pre><code>import mongoose from "mongoose";
+
+const main = async () => {
+  await mongoose.connect(process.env.MONGO_URI);
+  console.log("Conectado ao MongoDB");
+};
+
+main().catch((err) => console.error("Erro ao conectar ao MongoDB", err));
+
+export default mongoose;</code></pre>
+      <p class="done">Pronto quando, com o Mongo no ar, o processo imprime “Conectado ao MongoDB”. Ainda não há rota.</p>
+    </div>
+
+    <div class="step">
+      <h3>2.2 <code>models/</code> — um schema por substantivo</h3>
+      <p>Um arquivo, um <code>mongoose.model</code>. Campos <code>required</code> são a interface do documento: quem chama <code>save</code> precisa deles. No Sumiu o usuário tem <code>name</code>, <code>email</code>, <code>password</code> com <code>select: false</code>. A ordem tem <code>user</code> como <code>ObjectId</code> apontando para <code>"User"</code>. A tarefa do Todo aponta para o usuário da mesma forma.</p>
+      <p>Importe o mongoose de <code>../db/conn.js</code>, como a Bancada e o model de usuário do Sumiu. Importar direto de <code>"mongoose"</code> também funciona depois da conexão, e o model de requisição do Sumiu faz isso. Um caminho só deixa o seam óbvio.</p>
+      <p class="done">Pronto quando <code>mongoose.model("User", schema)</code> exporta o model e o processo ainda conecta, sem rota nenhuma.</p>
+    </div>
+
+    <div class="step">
+      <h3>2.3 <code>controllers/</code> — a implementação</h3>
+      <p>Uma classe com métodos estáticos, ou métodos de instância, que recebem <code>(req, res)</code>. O controller importa o model e devolve JSON. Ele não registra URL. A Bancada faz o CRUD inteiro aqui (<code>create</code>, <code>find</code>, <code>findById</code>, <code>findByIdAndUpdate</code>, <code>findByIdAndDelete</code>). O controller da Bancada usa <code>User</code> e precisa importar o model: sem esse import o arquivo não executa.</p>
+      <p class="done">Pronto quando cada método lê <code>req.body</code> ou <code>req.params</code> e responde com <code>res.status(...).json(...)</code>, e o model está importado no topo.</p>
+    </div>
+
+    <div class="step">
+      <h3>2.4 <code>routes/</code> — a interface HTTP</h3>
+      <p><code>Router()</code> amarra método e caminho a um método do controller. Isso é o que o front precisa saber. Fonte: <a href="https://expressjs.com/en/guide/routing.html">Routing</a>.</p>
+      <pre><code>import { Router } from "express";
+import UserController from "../controllers/user.controller.js";
+
+const userRoutes = Router();
+
+userRoutes.post("/", UserController.postUser);
+userRoutes.post("/login", UserController.login);
+
+export default userRoutes;</code></pre>
+      <p>Caminho fixo antes de caminho com parâmetro. Na Bancada, <code>GET /ordens/status/:status</code> está declarado depois de <code>GET /ordens/:id</code>. <code>:id</code> engole o segmento <code>status</code>. Declare <code>/status/:status</code> primeiro.</p>
+      <p class="done">Pronto quando o arquivo exporta o router e cada linha aponta para um método que existe no controller.</p>
+    </div>
+
+    <div class="step">
+      <h3>2.5 <code>index.js</code> — compõe e escuta</h3>
+      <p>A ordem dentro do arquivo também é obrigatória. <code>express.json()</code> antes das rotas, senão <code>req.body</code> chega vazio. <code>cookieParser</code> antes de qualquer middleware que leia cookie. <code>cors</code> antes das rotas. Fonte: <a href="https://expressjs.com/en/guide/using-middleware.html">Using middleware</a>.</p>
+      <pre><code>import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import userRoutes from "./routes/user.routes.js";
+
+const app = express();
+
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors({
+  credentials: true,
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+}));
+
+app.use("/users", userRoutes);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});</code></pre>
+      <p>Um arquivo de rota que ninguém importa não responde. O <code>app.use("/users", userRoutes)</code> é o que publica a interface. Some o prefixo com o caminho do router: <code>post("/")</code> vira <code>POST /users</code>, <code>post("/login")</code> vira <code>POST /users/login</code>.</p>
+      <p>O Todo e o Sumiu embrulham o <code>app</code> em <code>createServer</code> porque o Socket.IO precisa do servidor HTTP. Sem socket, <code>app.listen</code> basta. A Bancada faz assim.</p>
+      <p class="done">Pronto quando <code>npm run dev</code> imprime a porta e um <code>POST /users</code> com JSON válido devolve 200 ou 201.</p>
+    </div>
+
+    <h2 class="part">3. O módulo de usuário, com sessão</h2>
+    <p>A Bancada grava a senha como veio e não tem middleware. Sumiu e Todo são o modelo a repetir. Instale quando for escrever o login, não antes: o CRUD do passo 2 já sobe sem isso.</p>
+    <pre><code>npm install argon2 jsonwebtoken</code></pre>
+    <table>
+      <thead>
+        <tr><th>Pacote</th><th>O que faz</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>argon2</code></td>
+          <td><code>argon2.hash</code> no cadastro, <code>argon2.verify</code> no login. A senha que vai para o Mongo já é hash. <a href="https://github.com/ranisalt/node-argon2">node-argon2</a>.</td>
+        </tr>
+        <tr>
+          <td><code>jsonwebtoken</code></td>
+          <td><code>jwt.sign</code> com <code>JWT_SECRET</code> depois que a senha confere. <code>jwt.verify</code> no middleware. <a href="https://github.com/auth0/node-jsonwebtoken">jsonwebtoken</a>.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>No <code>.env</code>, some <code>JWT_SECRET</code> e <code>JWT_EXPIRATION_MS</code>. O login do Sumiu grava o token num cookie <code>httpOnly</code> chamado <code>token</code>. O middleware em <code>middleware/user.js</code> lê <code>req.cookies.token</code>, verifica, põe <code>req.user</code> e chama <code>next()</code>. Sem cookie, responde 401.</p>
+    <p>O seam fica na rota, não espalhado nos controllers:</p>
+    <pre><code>userRoutes.post("/logout", userMiddleware, UserController.logout);
+userRoutes.put("/:id", userMiddleware, UserController.updateUser);</code></pre>
+    <p>No Todo, criar e listar tarefa passam pelo mesmo middleware. No Sumiu, as rotas de requisição ainda não passam. Quando a tela exigir usuário logado, o lugar de declarar isso é a linha da rota.</p>
+    <p>No login, o <code>findOne</code> precisa de <code>.select("+password")</code> porque o schema do Sumiu marca <code>password</code> com <code>select: false</code>.</p>
+    <p class="done">Pronto quando um <code>POST /users/login</code> devolve <code>Set-Cookie</code>, e um <code>POST /users/logout</code> sem esse cookie devolve 401.</p>
+
+    <h2>4. O recurso</h2>
+    <p>Repita 2.2–2.4 com o segundo substantivo. No Sumiu: <code>models/requisition.js</code>, controller, <code>routes/requisition.routes.js</code>, e no <code>index.js</code> a linha <code>app.use("/requisitions", requisitionRoutes)</code>. Na Bancada o prefixo é <code>/ordens</code>. No Todo é <code>/tarefas</code>, e cada linha da rota leva <code>userMiddleware</code>.</p>
+    <p>A interface mínima, a que a Bancada e o Sumiu expõem:</p>
+    <table>
+      <thead>
+        <tr><th>Chamada</th><th>Efeito</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>POST /</code></td><td>cria</td></tr>
+        <tr><td><code>GET /</code></td><td>lista</td></tr>
+        <tr><td><code>GET /:id</code></td><td>um documento</td></tr>
+        <tr><td><code>PUT /:id</code></td><td>substitui campos</td></tr>
+        <tr><td><code>DELETE /:id</code></td><td>apaga</td></tr>
+      </tbody>
+    </table>
+    <p>O Todo troca o <code>PUT</code> por <code>PATCH /:id/situacao</code>. É a mesma ideia: uma linha no router, um método no controller.</p>
+    <p class="done">Pronto quando <code>GET</code> no prefixo devolve um array JSON, mesmo que vazio.</p>
+
+    <h2 class="part">5. Criar o front</h2>
+    <p>Só comece com a API respondendo <code>POST</code> de usuário e <code>GET</code> da lista. A tela é um adapter da interface que você já publicou.</p>
+
+    <div class="step">
+      <h3>5.1 Vite</h3>
+      <pre><code>cd ..
+npm create vite@latest front -- --template react
+cd front
+npm install</code></pre>
+      <p>Fonte: <a href="https://vite.dev/guide/">guia do Vite</a>. Isso gera <code>index.html</code> com <code>&lt;div id="root"&gt;</code> e <code>src/main.jsx</code>, que chama <code>createRoot</code>. <code>npm run dev</code> sobe em <code>http://localhost:5173</code>.</p>
+      <p class="done">Pronto quando o navegador abre a página gerada pelo Vite.</p>
+    </div>
+
+    <div class="step">
+      <h3>5.2 Pacotes da interface</h3>
+      <pre><code>npm install react-router-dom axios
+npm install tailwindcss @tailwindcss/vite</code></pre>
+      <table>
+        <thead>
+          <tr><th>Pacote</th><th>O que faz</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>react</code> e <code>react-dom</code></td>
+            <td>Já vêm do template. A função devolve JSX. <a href="https://react.dev/learn/describing-the-ui">Describing the UI</a>.</td>
+          </tr>
+          <tr>
+            <td><code>react-router-dom</code></td>
+            <td><code>BrowserRouter</code> no <code>main.jsx</code>, <code>Routes</code> e <code>Route</code> no <code>App.jsx</code>. Uma URL, uma página. <a href="https://reactrouter.com/start/declarative/routing">Routing</a>.</td>
+          </tr>
+          <tr>
+            <td><code>axios</code></td>
+            <td>O cliente HTTP. <code>withCredentials: true</code> manda o cookie que o login gravou. <a href="https://axios-http.com/docs/intro">Axios</a>.</td>
+          </tr>
+          <tr>
+            <td><code>tailwindcss</code> e <code>@tailwindcss/vite</code></td>
+            <td>Classes no JSX. No <code>vite.config.js</code>, <code>plugins: [react(), tailwindcss()]</code>. No <code>src/index.css</code>, a primeira linha é <code>@import "tailwindcss";</code>. <a href="https://tailwindcss.com/docs/installation/using-vite">Instalação com Vite</a>.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><code>react-hot-toast</code> está no Sumiu e na Bancada. É aviso visual, não faz parte da interface. Entra quando uma tela precisar de mensagem, com <code>npm install react-hot-toast</code>.</p>
+      <p class="done">Pronto quando <code>npm run dev</code> continua no ar depois dos dois <code>npm install</code>.</p>
+    </div>
+
+    <div class="step">
+      <h3>5.3 <code>.env</code> do front</h3>
+      <pre><code>VITE_API_URL=http://localhost:5000</code></pre>
+      <p>O Vite só expõe variável que começa com <code>VITE_</code>. O Sumiu lê <code>import.meta.env.VITE_API_URL</code>. O Todo leu o mesmo valor com o nome <code>VITE_BASE_URL</code>. Escolha um nome e use esse no <code>axios.create</code>. Reinicie o <code>npm run dev</code> depois de criar o arquivo.</p>
+      <p class="done">Pronto quando o valor no código é a mesma origem da API, porta inclusive.</p>
+    </div>
+
+    <div class="step">
+      <h3>5.4 <code>src/api.js</code> — adapter</h3>
+      <p>Um <code>axios.create</code>. Funções nomeadas, uma por chamada da API. As páginas importam a função, não o axios.</p>
+      <pre><code>import axios from "axios";
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true,
+  headers: { "Content-Type": "application/json" },
+});
+
+export const createUser = (user) => api.post("/users", user);
+export const loginUser = (user) => api.post("/users/login", user);
+export const getAll = () => api.get("/requisitions");
+
+export default api;</code></pre>
+      <p>Troque <code>/users</code> e <code>/requisitions</code> pelo prefixo do projeto: <code>/usuarios</code> e <code>/tarefas</code> no Todo, <code>/ordens</code> na Bancada.</p>
+      <p class="done">Pronto quando cada função exportada corresponde a uma linha que existe no router da API.</p>
+    </div>
+
+    <div class="step">
+      <h3>5.5 Router, depois as páginas</h3>
+      <p>Em <code>src/main.jsx</code>, envolva <code>&lt;App /&gt;</code> com <code>&lt;BrowserRouter&gt;</code>. Os três fronts fazem isso. Em <code>App.jsx</code>, declare as rotas na ordem em que você as constrói:</p>
+      <ol>
+        <li><code>/user/register</code> chama <code>createUser</code>. Corpo: nome, e-mail, senha.</li>
+        <li><code>/user/login</code> chama <code>loginUser</code>. O cookie volta sozinho porque <code>withCredentials</code> está no cliente e <code>credentials: true</code> está no CORS.</li>
+        <li>A lista chama o <code>GET</code> da coleção e desenha o array.</li>
+        <li>Criar, ver um, editar: uma página por chamada, cada uma importando uma função de <code>api.js</code>.</li>
+      </ol>
+      <p>O Sumiu já tem esse mapa em <code>FrontEnd/front/src/App.jsx</code>: <code>/</code>, <code>/user/login</code>, <code>/user/register</code>, <code>/requisition</code>, <code>/requisition/create</code>, <code>/requisition/edit/:id</code>, <code>/requisition/:id</code>. A rota com <code>:id</code> fica por último dentro do grupo, pelo mesmo motivo do <code>GET /:id</code> na API.</p>
+      <p>Uma página é uma função. Estado dos campos com <code>useState</code>. No submit, <code>preventDefault</code>, chama a função de <code>api.js</code>, e <code>useNavigate</code> manda para a próxima URL. Fonte: <a href="https://react.dev/learn/describing-the-ui">Describing the UI</a>.</p>
+      <p class="done">Pronto quando o cadastro cria um documento, o login grava o cookie, e a lista mostra o que o <code>GET</code> devolveu.</p>
+    </div>
+
+    <h2 class="part">6. Fora desta sequência</h2>
+    <p>Entram depois que usuário e um recurso respondem.</p>
+    <table>
+      <thead>
+        <tr><th>Pacote</th><th>Projeto</th><th>Para quê</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>swagger-ui-express</code> e <code>swagger-autogen</code></td><td>Os três</td><td><code>GET /docs</code>. Gere o JSON com o script <code>swagger</code> depois que as rotas existirem.</td></tr>
+        <tr><td><code>nodemailer</code></td><td>Todo</td><td>E-mail de redefinição de senha. Variáveis <code>EMAIL_*</code>.</td></tr>
+        <tr><td><code>socket.io</code> e <code>socket.io-client</code></td><td>Todo</td><td>Chat. O <code>index.js</code> passa a escutar com <code>httpServer</code>, não com <code>app.listen</code>.</td></tr>
+        <tr><td><code>apexcharts</code> e <code>react-apexcharts</code></td><td>Todo</td><td>Gráfico de situação. Só lê dados que a lista já devolve.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Mapa rápido</h2>
+    <table>
+      <thead>
+        <tr><th>Ordem</th><th>Arquivo</th><th>Papel</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><code>package.json</code> + <code>.env</code></td><td>manifesto e segredos</td></tr>
+        <tr><td>2</td><td><code>db/conn.js</code></td><td>adapter do Mongo</td></tr>
+        <tr><td>3</td><td><code>models/</code></td><td>formato do documento</td></tr>
+        <tr><td>4</td><td><code>controllers/</code></td><td>implementação</td></tr>
+        <tr><td>5</td><td><code>routes/</code></td><td>interface HTTP</td></tr>
+        <tr><td>6</td><td><code>middleware/user.js</code></td><td>seam do cookie</td></tr>
+        <tr><td>7</td><td><code>index.js</code></td><td>compõe e escuta</td></tr>
+        <tr><td>8</td><td>Vite + <code>src/api.js</code></td><td>adapter do front</td></tr>
+        <tr><td>9</td><td><code>main.jsx</code>, <code>App.jsx</code>, páginas</td><td>uma tela por chamada</td></tr>
+      </tbody>
+    </table>
+
+    <p class="footer-links noprint">
+      Treino deste primeiro corte: <a href="../lessons/0002-comandos-e-pacotes.html">Lição 2 — Comandos e pacotes</a>.
+      Contrato curto do Sumiu: <a href="./contrato-da-api.html">Contrato da API</a>.
+      Se uma frase ficou torta, pergunta. A próxima lição é a ordem dos cinco arquivos, com o Sumiu aberto do lado.
+    </p>
+  </main>
+</body>
+</html>

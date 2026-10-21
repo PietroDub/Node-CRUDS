@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lição 2 — Comandos e pacotes</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+  <main class="page">
+    <p class="kicker">Lição 2 · Bancada, Sumiu, Todo</p>
+    <h1>Comandos e pacotes</h1>
+    <p class="lede">Antes de abrir o Sumiu, dá para nomear o comando e o pacote. A sequência inteira, da conexão até a tela, está no <a href="../reference/guia-da-arquitetura.html">guia de montagem</a>. Esta lição é só o começo: a pasta da API.</p>
+
+    <h2>O que os três fizeram primeiro</h2>
+    <p>Uma pasta, um <code>package.json</code> com <code>"type": "module"</code>, e os pacotes que o <code>index.js</code> importa no topo. <code>npm init -y</code> cria o manifesto. Fonte: <a href="https://docs.npmjs.com/cli/v11/commands/npm-init">npm-init</a>. O Vite fica para depois: ele gera o front, não a API.</p>
+    <pre><code>mkdir api &amp;&amp; cd api
+npm init -y
+npm install express mongoose dotenv cors cookie-parser
+npm install -D nodemon</code></pre>
+
+    <h2>Cinco pacotes, cinco trabalhos</h2>
+    <ul>
+      <li><code>express</code> escuta o HTTP. <a href="https://expressjs.com/en/starter/hello-world.html">Hello world</a>.</li>
+      <li><code>mongoose</code> abre o Mongo. <a href="https://mongoosejs.com/docs/connections.html">Conexão</a>.</li>
+      <li><code>dotenv</code> lê o <code>.env</code>. No Todo a primeira linha do <code>index.js</code> é <code>import "dotenv/config"</code>.</li>
+      <li><code>cors</code> deixa <code>localhost:5173</code> chamar a API e mandar o cookie. <a href="https://expressjs.com/en/resources/middleware/cors.html">cors</a>.</li>
+      <li><code>cookie-parser</code> preenche <code>req.cookies</code>, de onde o Sumiu tira o token.</li>
+    </ul>
+    <p><code>argon2</code> e <code>jsonwebtoken</code> entram no login, não neste comando. A Bancada não os usa: a senha fica como veio. O modelo a repetir é o do Sumiu.</p>
+    <p class="note">O Sumiu também lista um pacote chamado <code>expres</code>, sem o segundo s. Não instale esse. O servidor importa <code>express</code>.</p>
+
+    <h2>Confere de memória</h2>
+    <div class="quiz" data-quiz>
+      <fieldset>
+        <legend>1. Qual comando cria o package.json da API?</legend>
+        <label><input type="radio" name="q1" value="a"> Rode npm create vite na API</label>
+        <label><input type="radio" name="q1" value="b"> Rode npm init -y na API</label>
+        <label><input type="radio" name="q1" value="c"> Rode npm install express na API</label>
+      </fieldset>
+      <fieldset>
+        <legend>2. Qual pacote abre a conexão com o Mongo?</legend>
+        <label><input type="radio" name="q2" value="a"> O pacote cors abre o banco</label>
+        <label><input type="radio" name="q2" value="b"> O pacote dotenv abre o banco</label>
+        <label><input type="radio" name="q2" value="c"> O pacote mongoose abre o banco</label>
+      </fieldset>
+      <fieldset>
+        <legend>3. Para que o cors leva credentials true?</legend>
+        <label><input type="radio" name="q3" value="a"> Para o front poder enviar cookie</label>
+        <label><input type="radio" name="q3" value="b"> Para o argon2 gerar o hash</label>
+        <label><input type="radio" name="q3" value="c"> Para o nodemon recarregar o processo</label>
+      </fieldset>
+      <fieldset>
+        <legend>4. Qual a ordem dos arquivos da API?</legend>
+        <label><input type="radio" name="q4" value="a"> Rota, model, conexão e controller</label>
+        <label><input type="radio" name="q4" value="b"> Conexão, model, controller e rota</label>
+        <label><input type="radio" name="q4" value="c"> Controller, rota, conexão e model</label>
+      </fieldset>
+      <button type="button" data-check>Conferir</button>
+      <p class="feedback" data-feedback></p>
+      <script type="application/json" data-key>
+        {"q1":"b","q2":"c","q3":"a","q4":"b"}
+      </script>
+      <script type="application/json" data-reasons>
+        {
+          "q1": "O manifesto nasce com npm init -y. O Vite cria o front. O install pressupõe o package.json.",
+          "q2": "mongoose.connect é o que os três conn.js chamam. dotenv só lê o .env. cors só libera a origem.",
+          "q3": "credentials true, com origin explícito, é o que permite o navegador mandar o cookie do login.",
+          "q4": "A rota importa o controller, o controller importa o model, o model importa a conexão."
+        }
+      </script>
+    </div>
+
+    <h2>Fonte</h2>
+    <p>Leia o começo de <a href="https://expressjs.com/en/starter/installing.html">Installing Express</a>. O comando que importa é <code>npm install express</code>, dentro de uma pasta que já tem <code>package.json</code>.</p>
+
+    <h2>Seu passo, no código</h2>
+    <p>Abra o <code>package.json</code> da API do Sumiu e o do <code>backend</code> do Todo, lado a lado. Marque quais dos cinco pacotes aparecem nos dois. Quando tiver visto, volta e diz. A próxima lição percorre <code>conn.js</code>, o model, o controller, a rota e o <code>index.js</code>, um arquivo de cada vez.</p>
+
+    <p class="footer-links">Se uma frase ficou torta, pergunta. Eu sigo no passo em que você está. <a href="../reference/guia-da-arquitetura.html">Guia de montagem</a> · <a href="./0001-tres-telas-um-contrato.html">Lição 1</a></p>
+  </main>
+  <script src="../assets/quiz.js"></script>
+</body>
+</html>
