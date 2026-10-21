@@ -5,19 +5,20 @@ import {
   getRequisition,
   updateRequisition,
 } from "../src/api";
+import { useNavigate } from "react-router-dom";
 
 export default function Hero() {
   const [requisitions, setRequisitions] = useState([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchRequisitions = async () => {
       const response = await getAllRequisitions();
-      setRequisitions(response.data);
+      setRequisitions(response.requisition.data);
     };
     fetchRequisitions();
   }, []);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, requisition) => {
     const response = await deleteRequisition(id);
     if (response.status === 200) {
       toast.success("Requisição deletada com sucesso");
@@ -29,7 +30,7 @@ export default function Hero() {
       console.error(response);
     }
   };
-  const handleEdit = async (id) => {
+  const handleEdit = async (id, requisition) => {
     navigate(`/requisition/edit/${id}`, { state: { requisition } });
     if (response.status === 200) {
       toast.success("Requisição editada com sucesso");
@@ -63,10 +64,14 @@ export default function Hero() {
                 <button onClick={() => handleView(requisition._id)}>
                   Ver mais
                 </button>
-                <button onClick={() => handleEdit(requisition._id)}>
+                <button
+                  onClick={() => handleEdit(requisition._id, requisition)}
+                >
                   Editar
                 </button>
-                <button onClick={() => handleDelete(requisition._id)}>
+                <button
+                  onClick={() => handleDelete(requisition._id, requisition)}
+                >
                   Deletar
                 </button>
               </li>

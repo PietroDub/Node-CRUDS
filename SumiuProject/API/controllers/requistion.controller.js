@@ -110,10 +110,11 @@ export default class RequisitionController {
     static async getAllRequisitions(req, res){
         try{
             const requisitions = await Requisition.find();
-            return res.status(200).json({requisitions});
-        } catch(error){
-            return res.status(500).json({message: "Error on getting all requisitions!"});
-        }
+            return res.status(200).json({requisition: requisitions});
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Error on getting all requisitions!" });
     }
-
+  }
 }
