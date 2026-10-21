@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  deleteRequisition,
-  getAllRequisitions,
-  getRequisition,
-  updateRequisition,
-} from "../src/api";
-import { useNavigate } from "react-router-dom";
+import { deleteRequisition, getAllRequisitions } from "../src/api";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Hero() {
   const [requisitions, setRequisitions] = useState([]);
@@ -30,19 +25,10 @@ export default function Hero() {
       console.error(response);
     }
   };
-  const handleEdit = async (id, requisition) => {
+  const handleEdit = (id, requisition) => {
     navigate(`/requisition/edit/${id}`, { state: { requisition } });
-    if (response.status === 200) {
-      toast.success("Requisição editada com sucesso");
-      setRequisitions(
-        requisitions.filter((requisition) => requisition._id !== id),
-      );
-    } else {
-      toast.error("Erro ao editar requisição");
-      console.error(response);
-    }
   };
-  const handleView = async (id) => {
+  const handleView = (id, requisition) => {
     navigate(`/requisition/${id}`, { state: { requisition } });
   };
 
@@ -51,6 +37,7 @@ export default function Hero() {
       <div className="container">
         <div className="hero-content">
           <h1>Requisições!</h1>
+          <Link to="/requisition/create">Nova requisição</Link>
 
           <ul>
             {requisitions.map((requisition) => (
@@ -61,7 +48,7 @@ export default function Hero() {
                 <p>{requisition.dadDescription}</p>
                 <p>{requisition.dadAge}</p>
                 <p>{requisition.dadLastAddress}</p>
-                <button onClick={() => handleView(requisition._id)}>
+                <button onClick={() => handleView(requisition._id, requisition)}>
                   Ver mais
                 </button>
                 <button

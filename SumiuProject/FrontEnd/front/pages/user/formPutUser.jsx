@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { updateUser } from "../../src/api";
 
 export default function FormPutUser() {
@@ -8,6 +8,7 @@ export default function FormPutUser() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { id: userId } = useParams();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

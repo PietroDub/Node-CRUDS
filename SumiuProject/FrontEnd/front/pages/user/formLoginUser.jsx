@@ -1,10 +1,15 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { loginUser } from "../../src/api";
+
 export default function FormLoginUser() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await login(email, password);
+    const response = await loginUser({ email, password });
     if (response.status === 200) {
       toast.success("Login realizado com sucesso");
       navigate("/requisition");

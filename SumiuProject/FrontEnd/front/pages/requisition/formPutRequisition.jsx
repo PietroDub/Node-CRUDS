@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { updateRequisition } from "../../src/api";
 
 export default function FormPutRequisition() {
@@ -11,6 +11,7 @@ export default function FormPutRequisition() {
   const [dadLastAddress, setDadLastAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { id: requisitionId } = useParams();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

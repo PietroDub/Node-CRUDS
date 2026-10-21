@@ -1,27 +1,30 @@
+import { Route, Routes } from "react-router-dom";
 import Header from "../components/Header.jsx";
-import Hero from "../components/Hero.jsx";
 import Footer from "../components/Footer.jsx";
+import Hero from "../components/Hero.jsx";
+import LandingPage from "../pages/landingpage.jsx";
+import FormLoginUser from "../pages/user/formLoginUser.jsx";
+import FormPostUser from "../pages/user/formPostUser.jsx";
+import FormPutUser from "../pages/user/formPutUser.jsx";
+import FormPostRequisition from "../pages/requisition/formPostRequisition.jsx";
+import FormPutRequisition from "../pages/requisition/formPutRequisition.jsx";
+import RequisitionView from "../pages/requisition/requisitionView.jsx";
 
 function App() {
   return (
     <>
-      <Routes>
-        <Route path="/" element={<Hero />} />
-        <Route path="/requisition/edit/:id" element={<RequisitionEdit />} />
-        <Route path="/requisition/:id" element={<RequisitionView />} />
-        <Route path="/requisition/create" element={<RequisitionCreate />} />
-        <Route path="/requisition/delete/:id" element={<RequisitionDelete />} />
-        <Route path="/requisition/list" element={<RequisitionList />} />
-        <Route path="/requisition/view/:id" element={<RequisitionView />} />
-        <Route path="/requisition/create" element={<RequisitionCreate />} />
-        <Route path="/user/login" element={<UserLogin />} />
-        <Route path="/user/register" element={<UserRegister />} />
-        <Route path="/user/logout" element={<UserLogout />} />/
-        <Route path="/user/update/:id" element={<UserUpdate />} />
-      </Routes>
       <Header />
       <main>
-        <Hero />
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/user/login" element={<FormLoginUser />} />
+          <Route path="/user/register" element={<FormPostUser />} />
+          <Route path="/user/update/:id" element={<FormPutUser />} />
+          <Route path="/requisition" element={<Hero />} />
+          <Route path="/requisition/create" element={<FormPostRequisition />} />
+          <Route path="/requisition/edit/:id" element={<FormPutRequisition />} />
+          <Route path="/requisition/:id" element={<RequisitionView />} />
+        </Routes>
       </main>
       <Footer />
     </>
