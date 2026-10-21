@@ -39,7 +39,7 @@ export default class UserController {
     }
 
     try {
-      const user = await User.findOne({ email }).select();
+      const user = await User.findOne({ email }).select(+password);
 
       if (!user) {
         return res.status(400).json({ message: "Invalid credantials!" });

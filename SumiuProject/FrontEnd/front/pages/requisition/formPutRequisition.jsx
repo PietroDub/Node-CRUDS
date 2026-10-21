@@ -1,3 +1,7 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { updateRequisition } from "../../src/api";
+
 export default function FormPutRequisition() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

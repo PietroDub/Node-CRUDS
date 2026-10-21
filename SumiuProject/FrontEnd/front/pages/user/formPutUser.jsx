@@ -1,3 +1,7 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { updateUser } from "../../src/api";
+
 export default function FormPutUser() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

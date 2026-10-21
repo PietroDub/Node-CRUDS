@@ -1,9 +1,17 @@
+import { useEffect, useState } from "react";
+import {
+  deleteRequisition,
+  getAllRequisitions,
+  getRequisition,
+  updateRequisition,
+} from "../src/api";
+
 export default function Hero() {
   const [requisitions, setRequisitions] = useState([]);
 
   useEffect(() => {
     const fetchRequisitions = async () => {
-      const response = await getRequisitions();
+      const response = await getAllRequisitions();
       setRequisitions(response.data);
     };
     fetchRequisitions();
@@ -11,21 +19,30 @@ export default function Hero() {
 
   const handleDelete = async (id) => {
     const response = await deleteRequisition(id);
-    setRequisitions(
-      requisitions.filter((requisition) => requisition._id !== id),
-    );
+    if (response.status === 200) {
+      toast.success("Requisição deletada com sucesso");
+      setRequisitions(
+        requisitions.filter((requisition) => requisition._id !== id),
+      );
+    } else {
+      toast.error("Erro ao deletar requisição");
+      console.error(response);
+    }
   };
   const handleEdit = async (id) => {
-    const response = await editRequisition(id);
-    setRequisitions(
-      requisitions.filter((requisition) => requisition._id !== id),
-    );
+    navigate(`/requisition/edit/${id}`, { state: { requisition } });
+    if (response.status === 200) {
+      toast.success("Requisição editada com sucesso");
+      setRequisitions(
+        requisitions.filter((requisition) => requisition._id !== id),
+      );
+    } else {
+      toast.error("Erro ao editar requisição");
+      console.error(response);
+    }
   };
   const handleView = async (id) => {
-    const response = await viewRequisition(id);
-    setRequisitions(
-      requisitions.filter((requisition) => requisition._id !== id),
-    );
+    navigate(`/requisition/${id}`, { state: { requisition } });
   };
 
   return (
@@ -35,23 +52,25 @@ export default function Hero() {
           <h1>Requisições!</h1>
 
           <ul>
-            <li key={requisition._id}>
-              {requisition.title}
-              <p>{requisition.description}</p>
-              <p>{requisition.dadName}</p>
-              <p>{requisition.dadDescription}</p>
-              <p>{requisition.dadAge}</p>
-              <p>{requisition.dadLastAddress}</p>
-              <button onClick={() => handleView(requisition._id)}>
-                Ver mais
-              </button>
-              <button onClick={() => handleEdit(requisition._id)}>
-                Editar
-              </button>
-              <button onClick={() => handleDelete(requisition._id)}>
-                Deletar
-              </button>
-            </li>
+            {requisitions.map((requisition) => (
+              <li key={requisition._id}>
+                {requisition.title}
+                <p>{requisition.description}</p>
+                <p>{requisition.dadName}</p>
+                <p>{requisition.dadDescription}</p>
+                <p>{requisition.dadAge}</p>
+                <p>{requisition.dadLastAddress}</p>
+                <button onClick={() => handleView(requisition._id)}>
+                  Ver mais
+                </button>
+                <button onClick={() => handleEdit(requisition._id)}>
+                  Editar
+                </button>
+                <button onClick={() => handleDelete(requisition._id)}>
+                  Deletar
+                </button>
+              </li>
+            ))}
           </ul>
         </div>
       </div>
