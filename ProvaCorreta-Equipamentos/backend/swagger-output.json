@@ -1,0 +1,169 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "API de Empréstimo de Equipamentos",
+    "description": "Cadastro, consulta e empréstimo de equipamentos.",
+    "version": "1.0.0"
+  },
+  "host": "localhost:5000",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/equipamentos/": {
+      "post": {
+        "tags": [
+          "Equipamentos"
+        ],
+        "summary": "Cadastrar equipamento",
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NovoEquipamento"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Equipamento cadastrado com os campos automáticos preenchidos."
+          },
+          "422": {
+            "description": "Dados obrigatórios ausentes ou campos automáticos informados."
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Equipamentos"
+        ],
+        "summary": "Listar todos os equipamentos",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Lista de equipamentos; pode ser vazia."
+          }
+        }
+      }
+    },
+    "/equipamentos/status/{status}": {
+      "get": {
+        "tags": [
+          "Equipamentos"
+        ],
+        "summary": "Listar equipamentos por status",
+        "description": "",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "Disponível",
+              "Emprestado"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Equipamentos que possuem o status informado."
+          },
+          "400": {
+            "description": "Status inválido."
+          }
+        }
+      }
+    },
+    "/equipamentos/{id}/emprestimo": {
+      "patch": {
+        "tags": [
+          "Equipamentos"
+        ],
+        "summary": "Realizar empréstimo de um equipamento disponível",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Emprestimo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empréstimo realizado."
+          },
+          "400": {
+            "description": "ID inválido."
+          },
+          "404": {
+            "description": "Equipamento não encontrado."
+          },
+          "409": {
+            "description": "Equipamento já emprestado."
+          },
+          "422": {
+            "description": "Responsável não informado."
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "NovoEquipamento": {
+      "type": "object",
+      "properties": {
+        "descricao": {
+          "type": "string",
+          "example": "Notebook Dell Latitude"
+        },
+        "categoria": {
+          "type": "string",
+          "example": "Notebook"
+        },
+        "localizacao": {
+          "type": "string",
+          "example": "Laboratório 3"
+        }
+      }
+    },
+    "Emprestimo": {
+      "type": "object",
+      "properties": {
+        "responsavel": {
+          "type": "string",
+          "example": "Maria da Silva"
+        }
+      }
+    }
+  }
+}
